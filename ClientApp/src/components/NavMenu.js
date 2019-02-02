@@ -35,6 +35,11 @@ const NavMenu = ({ }) => {
                             <Glyphicon glyph='th-list' /> Products
                         </NavItem>
                     </LinkContainer>
+                    <LinkContainer to={'/orders'}>
+                        <NavItem>
+                            <Glyphicon glyph='th-list' /> Orders
+                        </NavItem>
+                    </LinkContainer>
                 </Nav>
             </Navbar.Collapse>
         </Navbar>

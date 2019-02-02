@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Demo.Hubs;
 using Microsoft.AspNetCore.Mvc;
 using Demo.Models;
 using Demo.Store;
+using Microsoft.AspNetCore.SignalR;
 using Raven.Client.Documents;
 
 namespace Demo.Controllers
@@ -10,12 +12,20 @@ namespace Demo.Controllers
     [Route("api/[controller]")]
     public class OrdersController : Controller
     {
+        private readonly IHubContext<AdminNotifyerHub> _hubContext;
+
+        public OrdersController(IHubContext<AdminNotifyerHub> hubContext)
+        {
+            _hubContext = hubContext;
+        }
+
         [HttpGet]
-        public async Task<IEnumerable<Order>> Get(int startIndex, int amount)
+        public async Task<IActionResult> Get(int startIndex, int amount)
         {
             using (var session = InternetShopStore.Store.OpenAsyncSession())
             {
-                return await session.Query<Order>().ToListAsync();
+                var orders = await session.Query<Order>().ToListAsync();
+                return Json(orders);
             }
         }
 
@@ -31,6 +41,7 @@ namespace Demo.Controllers
                 var order = new Order(product);
                 await session.StoreAsync(order);
                 await session.SaveChangesAsync();
+
                 return Ok();
             }
         }

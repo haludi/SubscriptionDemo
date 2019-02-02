@@ -27,9 +27,7 @@ export const actionCreators = {
                     'Content-Type': 'application/json'
                 },
             });
-        debugger;
         const response = await rowResponse.json();
-        debugger;
         dispatch({ type: receiveCreateProducts, response });
     }
 };

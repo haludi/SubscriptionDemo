@@ -1,22 +1,39 @@
 import React, { Component } from "react";
 import { bindActionCreators } from "redux";
-import { HubConnection, TransportType, ConsoleLogger, LogLevel } from "signalr";
+import { HubConnectionBuilder} from "@aspnet/signalr";
 import { connect } from "react-redux";
 import * as OrdersStore from "../store/OrdersStore";
 import OrdersTable from "./OrdersTable";
 import OrdersPagination from "./OrdersPagination";
+import ReactNotification from "react-notifications-component";
+import "react-notifications-component/dist/theme.css";
 
-class Orders extends Component {
-    constructor() {
-        var transport = TransportType.WebSockets;
-        let logger = new ConsoleLogger(LogLevel.Information);
+class Orders extends React.Component {
+    constructor(props) {
+        super(props);
+        this.notificationDOMRef = React.createRef();
 
         // create Connection
-        this._connection = new HubConnection(`http://${document.location.host}/admin`,
-            { transport: transport, logging: logger });
+        this._connection = new HubConnectionBuilder()
+            .withUrl("/hub")
+            .build();
 
-        // start connection
-        this._connection.start().catch(err => console.error(err, 'red'));
+        this._connection.start().catch(err => document.write(err));
+
+        this._connection.on("OrderAdded", (message) => {
+            this.notificationDOMRef.current.addNotification({
+                title: "New Order :-)",
+                message: message,
+                type: "success",
+                insert: "top",
+                container: "top-right",
+                animationIn: ["animated", "fadeIn"],
+                animationOut: ["animated", "fadeOut"],
+                dismiss: { duration: 2000 },
+                dismissable: { click: true }
+            });
+//            alert(`New order: ${message}`);
+        });
     }
 
     componentWillMount() {
@@ -36,8 +53,9 @@ class Orders extends Component {
     render() {
         return (
             <div>
+                <ReactNotification ref={this.notificationDOMRef} />
                 <h1>Orders</h1>
-                <OrdersTable buyOrder={this.buyOrder} {...this.props} />
+                <OrdersTable {...this.props} />
                 <OrdersPagination {...this.props} />
             </div>
         );
@@ -45,6 +63,6 @@ class Orders extends Component {
 }
 
 export default connect(
-    state => state.Orders,
-    dispatch => bindActionCreators({ ...OrdersStore.actionCreators, ...OrdersStore.actionCreators}, dispatch),
+    state => state.orders,
+    dispatch => bindActionCreators(OrdersStore.actionCreators, dispatch),
 )(Orders);

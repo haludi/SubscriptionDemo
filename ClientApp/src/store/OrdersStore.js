@@ -2,7 +2,7 @@
 const receiveGetOrders = "RECEIVE_GET_ORDERS";
 const requestCreateOrders = "REQUEST_CREATE_ORDERS";
 const receiveCreateOrders = "RECEIVE_CREATE_ORDERS";
-const initialState = { products: [], isLoading: false };
+const initialState = { orders: [], isLoading: false };
 
 export const actionCreators = {
     getOrders: startIndex => async (dispatch, getState) => {
@@ -13,26 +13,19 @@ export const actionCreators = {
         dispatch({ type: requestGetOrders, startIndex });
         const url = `api/Orders?startIndex=${startIndex}&amount=10`;
         const response = await fetch(url);
-        const order = await response.json();
-        dispatch({ type: receiveGetOrders, startIndex, order });
+        const orders = await response.json();
+        debugger;
+        dispatch({ type: receiveGetOrders, startIndex, orders });
     },
     createOrder: productId => async (dispatch, getState) => {
-        debugger;
         dispatch({ type: requestCreateOrders });
         const url = `api/Orders?productId=${productId}`;
         const rowResponse = await fetch(url,
             {
                 method: "POST",
-                body: JSON.stringify(productId),//TODO
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                body: productId,//TODO
             });
-        debugger;
-        const response = await rowResponse.json();
-        debugger;
-        dispatch({ type: receiveCreateOrders, response });
-        debugger;
+        dispatch({ type: receiveCreateOrders, rowResponse });
     }
 };
 
@@ -49,23 +42,21 @@ export const reducer = (state, action) => {
         return {
             ...state,
             startIndex: action.startIndex,
-            products: action.products,
+            orders: action.orders,
             isLoading: false
         };
     }
     if (action.type === requestCreateOrders) {
-        debugger;
         return {
             ...state,
             isLoading: true
         };
     }
     if (action.type === receiveCreateOrders) {
-        debugger;
         return {
             ...state,
             startIndex: action.startIndex,
-            order: action.order,
+            orders: action.orders,
             isLoading: false
         };
     }

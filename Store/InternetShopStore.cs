@@ -8,6 +8,8 @@ namespace Demo.Store
 {
     public static class InternetShopStore
     {
+        public const string DatabaseName = "InternetShop";
+
         private static readonly Lazy<IDocumentStore> LazyStore = new Lazy<IDocumentStore>(CreateStore);
 
         public static IDocumentStore Store => LazyStore.Value;
@@ -17,7 +19,7 @@ namespace Demo.Store
             var store = new DocumentStore()
             {
                 Urls = new[] { "http://localhost:8080" },
-                Database = "InternetShop"
+                Database = DatabaseName,
             }.Initialize();
 
             return store;

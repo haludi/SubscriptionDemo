@@ -1,19 +1,20 @@
 import React from 'react';
 
-const OrdersTable = ({ Orders }) => {
+const OrdersTable = ({ orders }) => {
     return (
         <table className='table'>
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Buy</th>
+                    <th>Date</th>
+                    <th>Products</th>
                 </tr>
             </thead>
             <tbody>
-                {Orders.map(order => {
+                {orders.map(order => {
                     return (
                         <tr key={order.id}>
-                            <td>{order.name}</td>
+                            <td>{order.dateTime}</td>
+                            <td>{order.product.name}</td>
                         </tr>
                     );
                 })}
